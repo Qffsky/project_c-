@@ -28,7 +28,7 @@ constexpr int Det(const std::array<std::array<int, N>, N>& matrix) {
         int determinant = 0, i = 0;
        	while (i < N) {
 	    std::array<std::array<int, N - 1>, N - 1> subMatrix = FillSubMatrix<N>(matrix, i); 
-            determinant += matrix[0][i] * (i % 2 ? 1 : -1) * Det<N - 1>(subMatrix);
+            determinant += matrix[0][i] * (i & 1 ? -1 : 1) * Det<N - 1>(subMatrix);
 	    ++i;
     	}
 
