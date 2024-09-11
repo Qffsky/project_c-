@@ -9,7 +9,7 @@ constexpr std::array<std::array<int, N - 1>, N - 1> FillSubMatrix(const std::arr
     for (unsigned long i = 1; i < N; ++i) {
         for (unsigned long j = 0; j < N; ++j) {
 	    if (j != column) {
-		    (&std::get<0>((&std::get<0>(subMatrix))[a]))[b] = (&std::get<0>((&std::get<0>(matrix))[i]))[j];
+	        (&std::get<0>((&std::get<0>(subMatrix))[a]))[b] = (&std::get<0>((&std::get<0>(matrix))[i]))[j];
 		b++;
 	    }
 	}
@@ -19,24 +19,29 @@ constexpr std::array<std::array<int, N - 1>, N - 1> FillSubMatrix(const std::arr
     return subMatrix;
 }
 
+template <int N>
+constexpr int RecursionDet(const std::array<std::array<int, N>, N>& matrix) {
+    int determinant = 0;
+    unsigned long i = 0;
+    while (i < N) {
+	std::array<std::array<int, N - 1>, N - 1> subMatrix = FillSubMatrix<N>(matrix, i); 
+        determinant += (&std::get<0>(std::get<0>(matrix)))[i] * (i & 1 ? -1 : 1) * RecursionDet<N - 1>(subMatrix);
+	++i;
+    }
+
+    return determinant;
+}
 
 template <int N>
 constexpr int Det(const std::array<std::array<int, N>, N>& matrix) {
-    if constexpr (N == 1) {
-        return std::get<0>(std::get<0>(matrix));
-    } else {
-        int determinant = 0;
-	unsigned long i = 0;
-       	while (i < N) {
-	    std::array<std::array<int, N - 1>, N - 1> subMatrix = FillSubMatrix<N>(matrix, i); 
-            determinant += (&std::get<0>(std::get<0>(matrix)))[i] * (i & 1 ? -1 : 1) * Det<N - 1>(subMatrix);
-	    ++i;
-    	}
-
-    	return determinant;
-    }
+    return RecursionDet<N>(matrix);
 }
 
+
+template <>
+constexpr int RecursionDet<1>(const std::array<std::array<int, 1>, 1>& matrix) {
+    return std::get<0>(std::get<0>(matrix));
+}
 
 int main() {
     constexpr std::array<std::array<int, 3>, 3> matrix = {{
@@ -47,7 +52,7 @@ int main() {
 
     constexpr std::array<std::array<int, 2>, 2> matrix2 = {{
         {1, 2},
-	{3, 4}
+	    {3, 4}
     }};
 
     constexpr std::array<std::array<int, 1>, 1> matrix1 = {{
